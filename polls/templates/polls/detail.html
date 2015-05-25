@@ -1,3 +1,5 @@
+
+
 <h1>{{ question.question_text }}</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -8,5 +10,11 @@
     <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
     <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
 {% endfor %}
+    <label for="choice_other">
+    <input type="radio" name="choice" id="choice_other" value="other" />
+    Other
+    <input type="text" name="new_choice" id="new_choice" value="" onfocus="document.getElementById('choice_other').checked=true;" onchange="document.getElementById('choice_other').checked=true;" />
+    </label>
+    <br />
 <input type="submit" value="Vote" />
 </form>

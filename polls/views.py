@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, loader
@@ -33,12 +34,33 @@ def vote(request, question_id):
     p = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = p.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
+    except (KeyError, Choice.DoesNotExist, ValueError, NameError):
         # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
-            'question': p,
-            'error_message': "You didn't select a choice.",
-        })
+        if request.POST.get('choice', '') == 'other':
+            msg_text = "独立思考的少年总有新点子"
+            text = request.POST.get('new_choice','').strip()
+            if not text.strip():
+                msg_text +="，但少年你的点子是空白，再来一次"
+                return render(request, 'polls/detail.html', {
+                    'question': p,
+                    'error_message': msg_text
+                })
+
+            q = Choice.objects.filter(question=p, choice_text=text)
+            if len(q) < 1:
+                c = Choice(question=p, choice_text=text)
+                c.votes += 1
+                c.save()
+
+            return render(request, 'polls/detail.html', {
+                'question': p,
+                'error_message': msg_text
+            })
+        else:
+            return render(request, 'polls/detail.html', {
+                'question': p,
+                'error_message': "You didn't select a choice.",
+            })
     else:
         voted = has_voted(request)
         if not voted:
