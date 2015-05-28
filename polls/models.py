@@ -1,16 +1,25 @@
 from django.db import models
+from django.utils import timezone
+import datetime
 
-class Poll(models.Model):
-      question=models.CharField(max_length=200)
-      pub_date=models.DateTimeField('data published')
-      def __unicode__(self):
-          return self.question
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField('date published')
+    def __unicode__(self):              # __unicode__ on Python 2
+        return self.question_text
 
 class Choice(models.Model):
-      poll=models.ForeignKey(Poll)
-      choice_text=models.CharField(max_length=200)
-      votes=models.IntegerField(default=0)
+    question = models.ForeignKey(Question)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+    def __unicode__(self):              # __unicode__ on Python 2
+        return self.choice_text
 
-      def __unicode__(self):
-          return self.choice_text
-# Create your models here.
+class Member(models.Model):
+    name   = models.CharField(max_length=200)
+    emp_id = models.CharField(max_length=10) #N22270
+    email  = models.EmailField()
+
+class Vote(models.Model):
+    question = models.ForeignKey(Choice)
+    member_id = models.ForeignKey(Member)
